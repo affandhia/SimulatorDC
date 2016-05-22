@@ -167,7 +167,79 @@ public class MainActivity
 		vPanel.add(topPanel);
 		topPanel.setLayout(null);
 		
-		JPanel frontPanel = new JPanel();
+		
+		class FrontPanel extends JPanel {
+			private static final long serialVersionUID = 1L;
+			/* (non-Javadoc)
+			 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+			 */
+			AffineTransform at;
+			int rotationZ[] = new int[]{90};
+			double scaleX = 1, scaleY = scaleX;
+			int magnetWidth = 60, magnetHeight = 80, motorHeadWidth = 25, motorHeadHeight = 40;
+			int cableWidth = 40, cableHeight = 40, maxCableWidth = 80, maxCableHeight = 40;
+			private int motorHeadX = 3 * povWidth / 4 - motorHeadWidth /2;
+			Rectangle pin = new Rectangle(motorHeadX,
+					povHeight / 2 - motorHeadHeight / 5 / 2,
+					motorHeadWidth,
+					motorHeadHeight / 5);
+			Rectangle cable = new Rectangle(povWidth / 2 - cableWidth / 2,
+					povHeight / 2 - cableHeight / 2,
+					cableWidth,
+					cableHeight);
+			@Override
+			protected void paintComponent(Graphics arg0)
+			{
+				// TODO Auto-generated method stub
+				Graphics2D g2 = (Graphics2D) arg0;
+				Graphics g2a = (Graphics2D) arg0;
+				at = g2.getTransform();
+				at.scale(scaleX, scaleY);
+				g2.setTransform(at);
+				super.paintComponent(g2);
+
+				// draw north magnet
+				g2a.setColor(Color.RED);
+				g2a.fillRect(povWidth - magnetWidth,
+						povHeight / 2 - magnetHeight /2,
+						magnetWidth,
+						magnetHeight);
+				
+				//draw south magnet
+				g2a.setColor(Color.BLUE);
+				g2a.fillRect(0,
+						povHeight / 2 - magnetHeight /2,
+						magnetWidth,
+						magnetHeight);
+				
+				at.rotate(Math.toRadians(rotationZ[0]), povWidth / 2, povHeight / 2);
+				g2.setTransform(at);
+				//draw cable
+				int cableWidth = 5, cableHeight = povHeight - 50;
+				g2.setColor(Color.ORANGE);
+				g2.fillRect(povWidth / 2 - cableWidth /2,
+						povHeight / 2 - cableHeight /2,
+						cableWidth,
+						cableHeight);
+
+				//draw motor head
+				g2.setColor(Color.YELLOW);
+				g2.fillOval(povWidth / 2 - motorHeadHeight /2,
+						povHeight / 2 - motorHeadHeight / 2,
+						motorHeadHeight,
+						motorHeadHeight);
+				
+				//draw motor head pin
+				int pinWidth = cableWidth + 5, pinHeight = motorHeadHeight;
+				g2.setColor(Color.BLACK);
+				g2.fillRect(povWidth / 2 - pinHeight /2,
+						povHeight / 2 - pinWidth /2,
+						pinHeight,
+						pinWidth);
+				
+			}
+		}
+		FrontPanel frontPanel = new FrontPanel();
 		vPanel.add(frontPanel);
 		frontPanel.setLayout(null);
 		
@@ -232,7 +304,7 @@ public class MainActivity
 		double[] increment = new double[]{1};
 		// custom action -0-------0-
 		Timer timer = new Timer(100, new ActionListener() {
-
+			int rotationZ = 0;
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
@@ -245,6 +317,10 @@ public class MainActivity
 				topPanel.cable.height += increment[0];
 				topPanel.cable.y = povHeight / 2 - topPanel.cable.height / 2;
 				topPanel.repaint();
+				if(rotationZ > 360)
+					rotationZ = 0;
+				frontPanel.rotationZ[0] += 4;
+				frontPanel.repaint();
 			}
 			
 		}); timer.start();
