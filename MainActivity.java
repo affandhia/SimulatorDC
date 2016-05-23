@@ -260,6 +260,22 @@ public class MainActivity
 		lblALuas.setBounds(80, 11, 46, 14);
 		statusPanel.add(lblALuas);
 		
+		JLabel lblNewLabel = new JLabel("Torsi");
+		lblNewLabel.setBounds(10, 36, 46, 14);
+		statusPanel.add(lblNewLabel);
+		
+		JLabel lblATorsi = new JLabel("1");
+		lblATorsi.setBounds(80, 36, 102, 14);
+		statusPanel.add(lblATorsi);
+		
+		JLabel lblGaya = new JLabel("Gaya EMF");
+		lblGaya.setBounds(10, 61, 60, 14);
+		statusPanel.add(lblGaya);
+		
+		JLabel lblAGaya = new JLabel("1");
+		lblAGaya.setBounds(80, 61, 102, 14);
+		statusPanel.add(lblAGaya);
+		
 		JPanel cPanel = new JPanel();
 		GridBagConstraints gbc_cPanel = new GridBagConstraints();
 		gbc_cPanel.fill = GridBagConstraints.BOTH;
@@ -276,6 +292,7 @@ public class MainActivity
 		arusCPanel.add(lblArusListrik);
 		
 		JSlider sliderArusListrik = new JSlider();
+		sliderArusListrik.setMaximum(10);
 		sliderArusListrik.setValue(1);
 		sliderArusListrik.setMinimum(1);
 		sliderArusListrik.setMajorTickSpacing(10);
@@ -345,12 +362,20 @@ public class MainActivity
 //				sliderKuatMedanMagnet
 //				sliderLebarKawat
 //				sliderPanjangKawat
-				int volt = 10;
-				final int KONSTANTA = 1;
-				int luasA = Integer.parseInt(lblALuas.getText());
-				int flux = sliderKuatMedanMagnet.getValue() * luasA;
-				double speed = 60 * sliderKuatMedanMagnet.getValue() / (2 * flux);
-				speed = (volt - sliderArusListrik.getValue() * 1) / (KONSTANTA * flux);
+				int volt = 50;
+				double luasA = Integer.parseInt(lblALuas.getText());
+				double KONSTANTA = 2 * 4 / (60*luasA);
+				double speed = 1;
+				double gayaElek = 1;
+				double torsi = 1;
+				
+				double  flux = sliderKuatMedanMagnet.getValue() * luasA;
+				speed = (volt - sliderArusListrik.getValue() * 5) / (KONSTANTA * flux);
+				gayaElek = KONSTANTA * flux * speed;
+				torsi = KONSTANTA * flux * sliderArusListrik.getValue();
+				lblATorsi.setText(torsi + "");
+				lblAGaya.setText(gayaElek + "");
+				
 				
 				// Top panel animation
 				topPanel.pin.y -= 1;
