@@ -362,15 +362,15 @@ public class MainActivity
 //				sliderKuatMedanMagnet
 //				sliderLebarKawat
 //				sliderPanjangKawat
-				int volt = 50;
+				int volt = 125;
 				double luasA = Integer.parseInt(lblALuas.getText());
 				double KONSTANTA = 2 * 4 / (60*luasA);
 				double speed = 1;
 				double gayaElek = 1;
 				double torsi = 1;
-				
+				double hambatan = 0.25;
 				double  flux = sliderKuatMedanMagnet.getValue() * luasA;
-				speed = (volt - sliderArusListrik.getValue() * 5) / (KONSTANTA * flux);
+				speed = (volt - sliderArusListrik.getValue() * hambatan) / (KONSTANTA * flux);
 				gayaElek = KONSTANTA * flux * speed;
 				torsi = KONSTANTA * flux * sliderArusListrik.getValue();
 				lblATorsi.setText(torsi + "");
