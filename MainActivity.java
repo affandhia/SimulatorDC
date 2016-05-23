@@ -20,6 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.Timer;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 public class MainActivity
 {
@@ -250,6 +252,14 @@ public class MainActivity
 		vPanel.add(statusPanel);
 		statusPanel.setLayout(null);
 		
+		JLabel lblLuasm = new JLabel("Luas (m2)");
+		lblLuasm.setBounds(10, 11, 60, 14);
+		statusPanel.add(lblLuasm);
+		
+		JLabel lblALuas = new JLabel("1");
+		lblALuas.setBounds(80, 11, 46, 14);
+		statusPanel.add(lblALuas);
+		
 		JPanel cPanel = new JPanel();
 		GridBagConstraints gbc_cPanel = new GridBagConstraints();
 		gbc_cPanel.fill = GridBagConstraints.BOTH;
@@ -266,6 +276,8 @@ public class MainActivity
 		arusCPanel.add(lblArusListrik);
 		
 		JSlider sliderArusListrik = new JSlider();
+		sliderArusListrik.setValue(1);
+		sliderArusListrik.setMinimum(1);
 		sliderArusListrik.setMajorTickSpacing(10);
 		sliderArusListrik.setPaintTicks(true);
 		arusCPanel.add(sliderArusListrik);
@@ -278,6 +290,8 @@ public class MainActivity
 		medmagCPanel.add(lblKuatMedanMagnet);
 		
 		JSlider sliderKuatMedanMagnet = new JSlider();
+		sliderKuatMedanMagnet.setValue(1);
+		sliderKuatMedanMagnet.setMinimum(1);
 		sliderKuatMedanMagnet.setPaintTicks(true);
 		sliderKuatMedanMagnet.setMajorTickSpacing(10);
 		medmagCPanel.add(sliderKuatMedanMagnet);
@@ -290,26 +304,58 @@ public class MainActivity
 		luasCPanel.add(lblPanjangKawat);
 		
 		JSlider sliderPanjangKawat = new JSlider();
+		JSlider sliderLebarKawat = new JSlider();
+		sliderPanjangKawat.setValue(1);
+		sliderPanjangKawat.setMinimum(1);
+		sliderPanjangKawat.setMaximum(10);
 		sliderPanjangKawat.setMajorTickSpacing(10);
 		sliderPanjangKawat.setPaintTicks(true);
+		sliderLebarKawat.setValue(1);
+		sliderLebarKawat.setMinimum(1);
+		sliderLebarKawat.setMaximum(10);
+		sliderLebarKawat.setMajorTickSpacing(10);
+		sliderLebarKawat.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				lblALuas.setText(sliderPanjangKawat.getValue() * sliderLebarKawat.getValue() + "");
+			}
+		});
+		
+		sliderPanjangKawat.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				lblALuas.setText(sliderPanjangKawat.getValue() * sliderLebarKawat.getValue() + "");
+			}
+		});
+		
 		luasCPanel.add(sliderPanjangKawat);
 		
 		JLabel lblLebarKawat = new JLabel("Lebar Kawat");
 		luasCPanel.add(lblLebarKawat);
-		
-		JSlider sliderLebarKawat = new JSlider();
-		sliderLebarKawat.setMajorTickSpacing(10);
+				
 		sliderLebarKawat.setPaintTicks(true);
 		luasCPanel.add(sliderLebarKawat);
 		double[] increment = new double[]{1};
 		// custom action -0-------0-
-		Timer timer = new Timer(100, new ActionListener() {
+		Timer timer = new Timer(60, new ActionListener() {
 			int rotationZ = 0;
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
+				// ambil value Arus dari 
+//				sliderArusListrik
+//				sliderKuatMedanMagnet
+//				sliderLebarKawat
+//				sliderPanjangKawat
+				int volt = 10;
+				final int KONSTANTA = 1;
+				int luasA = Integer.parseInt(lblALuas.getText());
+				int flux = sliderKuatMedanMagnet.getValue() * luasA;
+				double speed = 60 * sliderKuatMedanMagnet.getValue() / (2 * flux);
+				speed = (volt - sliderArusListrik.getValue() * 1) / (KONSTANTA * flux);
+				
+				// Top panel animation
 				topPanel.pin.y -= 1;
 				if (topPanel.cable.height < 1) {
+					//ubah increament kecepatan perubahan ----------------
 					increment[0] = 1 ;
 				} else if(topPanel.cable.height > topPanel.cableHeight) {
 					increment[0] = -1;
@@ -317,13 +363,16 @@ public class MainActivity
 				topPanel.cable.height += increment[0];
 				topPanel.cable.y = povHeight / 2 - topPanel.cable.height / 2;
 				topPanel.repaint();
+				
+				// front panel animation
 				if(rotationZ > 360)
 					rotationZ = 0;
-				frontPanel.rotationZ[0] += 4;
+				//ubah increament sudut ----------------
+				frontPanel.rotationZ[0] += speed;
+				//ubah increament sudut ---------------- [END]
 				frontPanel.repaint();
 			}
 			
 		}); timer.start();
 	}
-
 }
